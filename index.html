@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz-App-working</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            outline: none;
+        }
+
+        body {
+            margin: 0;
+            font-size: 16px;
+
+            background-image: url(Image/back2.jpg);
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: 100% 100%;
+            opacity: 120%;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            line-height: 1.5rem;
+            font-weight: bold;
+        }
+
+        header {
+
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .custom-box {
+            max-width: 700px;
+            background-color: white;
+            margin: 40px auto;
+            padding: 30px;
+            border-radius: 5%;
+        }
+
+        .custom-box::before,
+        .custom-box::after {
+            content: '';
+            clear: both;
+            display: table;
+
+        }
+
+        .custom-box.hide {
+            display: none;
+        }
+
+        .home-box h2 {
+            font-size: 18px;
+            color: rgb(223, 8, 8);
+            font-weight: 500;
+            margin-bottom: 15px;
+            line-height: 25px;
+            text-decoration: underline;
+            text-align: center;
+        }
+
+        .home-box ol {
+            margin-bottom: 1rem;
+        }
+
+        .home-box p {
+            font-size: 16px;
+            margin-bottom: 10px;
+            line-height: 22px;
+            color: black;
+            font-weight: 400;
+        }
+
+        .home-box p span {
+            font-weight: 400;
+        }
+
+        .home-box btn {
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 15px 45px;
+            background-color: rgb(42, 42, 161);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: larger;
+            font-weight: bolder;
+            display: inline-block;
+        }
+
+        .quiz-box .question-number,
+        .quiz-box .question-text,
+        .quiz-box .option-container,
+        .quiz-box .next-question-btn,
+        .quiz-box .answers-indicator {
+            width: 100%;
+            float: left;
+        }
+
+        :hover {
+            cursor: grab;
+            /* color: yellow; */
+        }
+
+
+        .quiz-box .question-number {
+            font-size: 18px;
+            color: red;
+            font-weight: 600;
+            border-bottom: 1px soild white;
+            padding-bottom: 10px;
+            line-height: 25px;
+        }
+
+        .quiz-box .question-text {
+            font-size: 22px;
+            color: black;
+            line-height: 28px;
+            font-weight: 400;
+            padding: 20px 0;
+            margin: 0;
+        }
+
+
+        .quiz-box .option-container .option {
+            background-color: #cccccc;
+            padding: 13px 15px;
+            font-size: 16px;
+            line-height: 22px;
+            color: #000000;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            text-transform: capitalize;
+            opacity: 0;
+            animation: fadeIn 0.3s ease forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz-box .option-container .option.already-answered {
+            pointer-events: none;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .quiz-box .option-container .option.correct ::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 100%;
+            background-color: green;
+            z-index: -1;
+            animation: slideInRight .5s ease forwards
+        }
+
+        @keyframes slideInRight {
+            0% {
+                transform: translatex(-100%);
+            }
+
+            100% {
+                transform: translatex(0%);
+            }
+        }
+
+        .quiz-box .option-container .option.wrong ::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 100%;
+            background-color: red;
+            z-index: -1;
+            animation: slideInRight .5s ease forwards
+        }
+
+        .quiz-box .option-container .option.wrong {
+            color: red;
+        }
+
+        .quiz-box .option-container .option.correct {
+            color: green;
+        }
+
+        img .option {
+            width: 200px;
+            height: 200px;
+        }
+
+        .quiz-box .btn {
+            margin: 15px 0;
+        }
+
+        .quiz-box .answers-indicator {
+            border-top: 1 solid #cccccc;
+        }
+
+        .quiz-box .answers-indicator div {
+            height: 40px;
+            width: 40px;
+            display: inline-block;
+            background-color: #cccccc;
+            border-radius: 50%;
+            margin-right: 3px;
+            margin-top: 15px;
+        }
+
+        .quiz-box .answers-indicator div.correct {
+            background-color: green;
+        }
+
+        .quiz-box .answers-indicator div.wrong {
+            background-color: red;
+        }
+
+        .result-box {
+            text-align: center;
+        }
+
+        .result-box .hide {
+            display: none;
+        }
+
+        .result-box h1 {
+            font-size: 36px;
+            line-height: 42px;
+            color: red;
+        }
+
+        .result-box table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            background-color: skyblue;
+        }
+
+        .result-box table td {
+            border: 1px solid rgb(49, 235, 17);
+            padding: 8px 15px;
+            font: 500;
+            color: black;
+            width: 50%;
+            text-align: left;
+
+        }
+
+        .result-box .btn {
+            margin-right: 20px;
+        }
+
+        #username {
+            border: 1px solid #56b608;
+            background-color: azure;
+        }
+
+        input[type=text] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid rgb(29, 250, 9);
+            box-sizing: border-box;
+        }
+
+        .header h1 {
+            border-radius: 12px;
+            width: 52%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid rgb(99, 236, 7);
+            box-sizing: border-box;
+            color: white;
+            background-image: url(Image/gif1.gif);
+        }
+
+        .footer {
+            background-image: url(Image/gif1.gif);
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: 100% 100%;
+            opacity: 120%;
+            padding: 4rem;
+            border: 1px solid;
+            border-width: thin;
+            border-color: black;
+            margin-top: 1rem;
+        }
+
+        .footer p {
+            color: white;
+            display: grid;
+            text-align: center;
+            font-weight: bolder;
+            font-size: x-large;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+
+        <img src="Image/gif2.gif" alt="web logo" height="200" width="700">
+        <h1>GENERAL KNOWLEDGE QUIZ</h1>
+
+    </header>
+    <div class="home-box custom-box">
+        <h2>QUIZ INSTRUCTIONS</h2>
+        <ol>
+            <li>Questions are displayed randomly from a bank of Questions</li>
+            <li>Once Quiz begins, No going Back</li>
+            <li>Once you choose an answer for a Question, Press next to continue</li>
+            <li>Wait for next question to populate</li>
+            <li>When done with all questions, click submit to populate your scores.</li>
+        </ol>
+        <form action="details">
+            <label for="Username"><b>Username</b></label>
+            <input type="text" placeholder="Enter userName Here" id="username" value="">
+        </form>
+        <p>Total Number of Questions: <span class="total-questions"> </span></p>
+        <button type="button" class="btn" onclick="saveName(); startQuiz()">Start Quiz</button>
+    </div>
+
+    <div class="quiz-box custom-box hide">
+        <div class="question-number">
+
+        </div>
+        <div class="question-text">
+
+        </div>
+        <div class="option-container">
+
+        </div>
+        <div class="next-question-btn">
+            <button type="button" class="btn" onclick="next()">Next</button>
+        </div>
+        <div class="answers-indicator">
+
+        </div>
+
+    </div>
+
+    <div class="result-box custom-box hide">
+        <h1>Quiz Result</h1>
+        <p id="message">Message Shows Here</p>
+
+        <table>
+            <tr>
+                <td>Total Question</td>
+                <td> <span class="total-question"></span></td>
+            </tr>
+            <tr>
+                <td>Attempt</td>
+                <td> <span class="total-attempt"></span></td>
+            </tr>
+            <tr>
+                <td>Correct</td>
+                <td> <span class="total-correct"></span></td>
+            </tr>
+            <tr>
+                <td>Wrong</td>
+                <td> <span class="total-wrong"></span></td>
+            </tr>
+            <tr>
+                <td>Percentage</td>
+                <td> <span class="total-percentage"></span></td>
+            </tr>
+            <tr>
+                <td>Total Score</td>
+                <td> <span class="total-score"></span></td>
+            </tr>
+        </table>
+        <button type="button" class="btn" onclick="window.location.href='index.html'">Back to Home</button>
+    </div>
+
+    <script>
+
+
+        //Arrays of Objects
+        const quiz = [
+            {
+                q: 'Which Continent is the largest in the world?',
+                options: ['Africa', 'Asia', 'Europe', 'The America'],
+                answer: 1
+            },
+            {
+                q: 'Which Planet is the Hottest?',
+                options: ['Pluto', 'Earth', 'Neptune', 'Venus'],
+                answer: 3
+            },
+            {
+                q: 'What is the color of Banana?',
+                options: ['Green', 'Blue', 'Yellow', 'White'],
+                answer: 2
+            },
+            {
+                q: 'Covid-19 has been erased',
+                options: ['True', 'False', 'Not aware'],
+                answer: 1
+            },
+            {
+                q: 'What is the lightest existing metal?',
+                options: ['Gold', 'Aluminium', 'Titanium', 'Silver'],
+                answer: 1
+            },
+            {
+                q: 'How many eyes does a honeybee have?',
+                options: ['Four', 'Five', 'Six', 'Two'],
+                answer: 1
+            },
+            {
+                q: 'How many digits does an IBAN number consist of?',
+                options: ['14', '15', '16', '11'],
+                answer: 0
+            },
+            {
+                q: 'Which one of these images of Animals is of a Carnivore?',
+                options: ['Lion', 'Rhinoceros', 'Elephant', 'Bears'],
+                answer: 0
+            },
+            {
+                q: 'Which one of these images is NOT of a Vegetable?',
+                options: ['Onion', 'Potato', 'Pepper', 'Carrot'],
+                answer: 2
+            },
+            {
+                q: 'Which one of these images is odd?',
+                options: ['Church', 'Hindu', 'Mosque', 'London'],
+                answer: 3
+            },
+            {
+                q: 'Who is the Incubent President of America?',
+                options: ['Obama', 'Trump', 'Kanye', 'J.F Kennedy'],
+                answer: 1
+            },
+            {
+                q: 'What time do we have Breakfast?',
+                options: ['Morning', 'Afternoon', 'Evening', 'Night'],
+                answer: 0
+            }
+        ]
+    </script>
+    <script>
+        const questionNumber = document.querySelector(".question-number");
+        const questionText = document.querySelector(".question-text");
+        const optionContainer = document.querySelector(".option-container");
+        const answersIndicatorContainer = document.querySelector(".answers-indicator");
+        const homeBox = document.querySelector(".home-box");
+        const quizBox = document.querySelector(".quiz-box");
+        const resultBox = document.querySelector(".result-box");
+
+        let questionCounter = 0;
+        let currentQuestion;
+        let availableQuestions = [];
+        let availableOptions = [];
+        let correctAnswers = 0;
+        let attempt = 0;
+
+        //Push the questions into availableQuestions Array
+        function setAvailableQuestions() {
+            const totalQuestion = 5;
+            for (let i = 0; i < totalQuestion; i++) {
+                const index0 = Math.floor(Math.random() * quiz.length);
+                availableQuestions.push(quiz[index0]);
+                quiz.splice(index0, 1);
+            }
+        }
+        //set question number and question and options
+        function getNewQuestion() {
+            //set question number
+            questionNumber.innerHTML = "Question " + (questionCounter + 1) + " of " + 5;
+
+            //set question text
+            //get Random Question
+            const questionIndex = availableQuestions[Math.floor(Math.random() * availableQuestions.length)]
+            currentQuestion = questionIndex;
+            questionText.innerHTML = currentQuestion.q;
+            //get position of 'questionIndex' from the availableQuestion Array
+            const index1 = availableQuestions.indexOf(questionIndex);
+            //remove the questionIndex from the availableQuestion Array so as to avoid repetition
+            availableQuestions.splice(index1, 1);
+
+            //set options
+            //get the lenght of options
+            const optionLen = currentQuestion.options.length
+            //Push options into availableOptions Array
+            for (let i = 0; i < optionLen; i++) {
+                availableOptions.push(i)
+            }
+            optionContainer.innerHTML = '';
+            let animationDelay = 0.2;
+            //create options in html
+
+            //where original starts
+
+            if ((currentQuestion.q).includes("images")) {
+                for (let i = 0; i < optionLen; i++) {
+                    //random option
+                    const optionIndex = availableOptions[Math.floor(Math.random() * availableOptions.length)];
+                    //get the position of 'optionIndex' from the availableQuestions
+                    const index2 = availableOptions.indexOf(optionIndex);
+                    //remove the 'optionIndex' from the availableQuestions
+                    availableOptions.splice(index2, 1);
+                    const option = document.createElement("img");
+                    option.setAttribute("src", "")
+                    option.src = "Image/" + currentQuestion.options[optionIndex] + ".jpg";
+                    option.id = optionIndex;
+                    option.animationDelay = animationDelay + 's';
+                    animationDelay = animationDelay + 0.15;
+                    option.className = "option";
+                    optionContainer.appendChild(option);
+                    option.setAttribute("onclick", "getResult(this)");
+                }
+            } else {
+                for (let i = 0; i < optionLen; i++) {
+                    //random option
+                    const optionIndex = availableOptions[Math.floor(Math.random() * availableOptions.length)];
+                    //get the position of 'optionIndex' from the availableQuestions
+                    const index2 = availableOptions.indexOf(optionIndex);
+                    //remove the 'optionIndex' from the availableQuestions
+                    availableOptions.splice(index2, 1);
+                    const option = document.createElement("div");
+                    option.innerHTML = currentQuestion.options[optionIndex];
+                    option.id = optionIndex;
+                    option.animationDelay = animationDelay + 's';
+                    animationDelay = animationDelay + 0.15;
+                    option.className = "option";
+                    optionContainer.appendChild(option)
+                    option.setAttribute("onclick", "getResult(this)");
+                }
+            }
+
+            //where original ends
+
+            questionCounter++
+        }
+        //Get the result of current attempted question
+        function getResult(element) {
+            const id = parseInt(element.id);
+            // get the Answer by comparing the id of the clicked
+            if (id === currentQuestion.answer) {
+                //set the Greencolor to the correct option
+                element.classList.add("correct");
+                //add the indicator to correct mark
+                updateAnswerIndicator("correct");
+                correctAnswers++;
+                console.log("correct:" + correctAnswers)
+            }
+            else {
+                //set the Red color to the wrong option
+                element.classList.add("wrong");
+                //add the indicator to wrong mark
+                updateAnswerIndicator("wrong");
+
+                //if the answer is incorrect, show the correct one by adding green
+                const optionLen = optionContainer.children.length;
+                for (let i = 0; i < optionLen; i++) {
+                    if (parseInt(optionContainer.children[i].id) === currentQuestion.answer) {
+                        optionContainer.children[i].classList.add("correct");
+                    }
+                }
+            }
+            attempt++;
+            unclickableOptions();
+        }
+        //make all the options unclickable once user select an option
+        function unclickableOptions() {
+            const optionLen = optionContainer.children.length;
+            for (let i = 0; i < optionLen; i++) {
+                optionContainer.children[i].classList.add("already-answered");
+            }
+        }
+
+        function answersIndicator() {
+            answersIndicatorContainer.innerHTML = '';
+            const totalQuestion = 5;
+            for (let i = 0; i < totalQuestion; i++) {
+                const indicator = document.createElement("div");
+                answersIndicatorContainer.appendChild(indicator);
+
+            }
+        }
+        function updateAnswerIndicator(markType) {
+            answersIndicatorContainer.children[questionCounter - 1].classList.add(markType)
+
+        }
+
+        function next() {
+            if (questionCounter === 5) {
+                console.log("quiz over");
+                quizOver();
+            }
+            else {
+                getNewQuestion();
+            }
+        }
+
+        function saveName() {
+            const username = document.getElementById("username").value;
+            return username;
+        }
+
+        function quizOver() {
+            //add quizBox
+            quizBox.classList.add("hide");
+            //show result box
+            resultBox.classList.remove("hide");
+            quizResult();
+        }
+        //Get the quiz result
+        function quizResult() {
+            resultBox.querySelector("#message").innerHTML = "Well done " + saveName() + " below are your scores breakdown.";
+            resultBox.querySelector(".total-question").innerHTML = 5;
+            resultBox.querySelector(".total-attempt").innerHTML = attempt;
+            resultBox.querySelector(".total-correct").innerHTML = correctAnswers;
+            resultBox.querySelector(".total-wrong").innerHTML = attempt - correctAnswers;
+            const percentage = (correctAnswers / 5) * 100
+            resultBox.querySelector(".total-percentage").innerHTML = percentage.toFixed(2) + "%";
+            resultBox.querySelector(".total-score").innerHTML = correctAnswers + " / " + 5;
+        }
+        function backToHome() {
+            //Hide Result Box
+            resultBox.classList.add("hide");
+            //Show Home Box
+            homeBox.classList.remove("hide");
+            resetQuiz();
+        }
+        function resetQuiz() {
+            questionCounter = 0;
+            correctAnswers = 0;
+            attempt = 0;
+        }
+
+
+        function tryAgainQuiz() {
+            //hide the resultBox
+            resultBox.classList.add("hide");
+            //show the quizBox
+            quizBox.classList.remove("hide");
+            resetQuiz();
+            //  startQuiz();
+            getNewQuestion();
+        }
+
+        //starting
+        function startQuiz() {
+
+            //Hide Home Box
+            homeBox.classList.add("hide");
+            //Show Quiz Box
+            quizBox.classList.remove("hide");
+            //we will set all questions in availableQuestions Array
+            setAvailableQuestions();
+            //then we will call getNewQuestion(); function
+            getNewQuestion();
+
+            //to create answers indicator
+            answersIndicator();
+
+        };
+
+
+        window.onload = function () {
+            homeBox.querySelector(".total-questions").innerHTML = 5;
+        }
+    </script>
+
+
+    <footer class="footer">
+
+        <p> Quiz by: ATILOLA DAMILARE EZEKIEL</p>
+        <p>3026982</p>
+        <p>damilareatilola@gmail.com</p>
+
+    </footer>
+</body>
+
+</html>
